@@ -61,8 +61,7 @@ CREATE TABLE module_role (
     can_delete BOOLEAN DEFAULT FALSE,
     route VARCHAR(150) NOT NULL,
     FOREIGN KEY (module_id) REFERENCES module(id),
-    FOREIGN KEY (role_id) REFERENCES role(id),
-    UNIQUE (module_id, role_id)
+    FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 CREATE TABLE view (
@@ -238,3 +237,61 @@ INSERT INTO view_module (view_id, module_id) VALUES
 
 -- 👥 CLIENT
 (12, 5); -- client → client
+
+
+-- ==============================================
+-- 👥 ROLES BASE
+-- ==============================================
+INSERT INTO role (id, name, description) VALUES
+(1, 'admin', 'Rol con privilegios completos sobre todos los módulos y operaciones del sistema.'),
+(2, 'manager', 'Rol con permisos de gestión intermedia: puede crear, actualizar y consultar información.'),
+(3, 'operator', 'Rol enfocado en la operación diaria: puede registrar y consultar datos sin modificar configuraciones críticas.'),
+(4, 'auditor', 'Rol de solo lectura, destinado a revisiones, reportes y control interno.'),
+(5, 'client_user', 'Rol externo con acceso limitado a funcionalidades específicas del módulo de clientes.');
+
+
+-- ==============================================
+-- 🔐 SECURITY MODULE (module_id = 1)
+-- ==============================================
+INSERT INTO module_role (module_id, role_id, can_create, can_read, can_update, can_delete, route) VALUES
+(1, 1, TRUE, TRUE, TRUE, TRUE, '/security'),       -- admin
+(1, 2, TRUE, TRUE, TRUE, FALSE, '/security'),      -- manager
+(1, 3, TRUE, TRUE, FALSE, FALSE, '/security'),     -- operator
+(1, 4, FALSE, TRUE, FALSE, FALSE, '/security');    -- auditor
+
+-- ==============================================
+-- 🏢 PROVIDER MODULE (module_id = 2)
+-- ==============================================
+INSERT INTO module_role (module_id, role_id, can_create, can_read, can_update, can_delete, route) VALUES
+(2, 1, TRUE, TRUE, TRUE, TRUE, '/provider'),
+(2, 2, TRUE, TRUE, TRUE, FALSE, '/provider'),
+(2, 3, TRUE, TRUE, FALSE, FALSE, '/provider'),
+(2, 4, FALSE, TRUE, FALSE, FALSE, '/provider');
+
+-- ==============================================
+-- 📦 INVENTORY MODULE (module_id = 3)
+-- ==============================================
+INSERT INTO module_role (module_id, role_id, can_create, can_read, can_update, can_delete, route) VALUES
+(3, 1, TRUE, TRUE, TRUE, TRUE, '/inventory'),
+(3, 2, TRUE, TRUE, TRUE, FALSE, '/inventory'),
+(3, 3, TRUE, TRUE, FALSE, FALSE, '/inventory'),
+(3, 4, FALSE, TRUE, FALSE, FALSE, '/inventory');
+
+-- ==============================================
+-- 💰 BILLING MODULE (module_id = 4)
+-- ==============================================
+INSERT INTO module_role (module_id, role_id, can_create, can_read, can_update, can_delete, route) VALUES
+(4, 1, TRUE, TRUE, TRUE, TRUE, '/billing'),
+(4, 2, TRUE, TRUE, TRUE, FALSE, '/billing'),
+(4, 3, TRUE, TRUE, FALSE, FALSE, '/billing'),
+(4, 4, FALSE, TRUE, FALSE, FALSE, '/billing');
+
+-- ==============================================
+-- 👥 CLIENT MODULE (module_id = 5)
+-- ==============================================
+INSERT INTO module_role (module_id, role_id, can_create, can_read, can_update, can_delete, route) VALUES
+(5, 1, TRUE, TRUE, TRUE, TRUE, '/client'),
+(5, 2, TRUE, TRUE, TRUE, FALSE, '/client'),
+(5, 3, TRUE, TRUE, FALSE, FALSE, '/client'),
+(5, 4, FALSE, TRUE, FALSE, FALSE, '/client'),
+(5, 5, FALSE, TRUE, FALSE, FALSE, '/client');  -- client_user
